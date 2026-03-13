@@ -5,10 +5,18 @@ import com.codeshield.model.FunctionComplexity;
 import com.codeshield.model.ModuleResult;
 import com.codeshield.parser.CFGBuilder;
 import com.codeshield.parser.SourceReader;
+import com.codeshield.security.SecurityResult;
+import com.codeshield.security.SecurityScanner;
 
 import java.util.List;
 
 public class ComplexityAnalyser {
+
+    private final SecurityScanner securityScanner;
+
+    public ComplexityAnalyser() {
+        this.securityScanner = new SecurityScanner();
+    }
 
     public ModuleResult analyse(String filepath) {
         ModuleResult result = new ModuleResult(filepath);
@@ -35,7 +43,6 @@ public class ComplexityAnalyser {
 
         if (cfgs.isEmpty()) {
             result.setSkipReason("No functions found in module");
-            return result;
         }
 
         int totalCC = 0;
@@ -48,10 +55,19 @@ public class ComplexityAnalyser {
             maxCC = Math.max(maxCC, fc.getCyclomaticComplexity());
         }
 
-        double avgCC = (double) totalCC / cfgs.size();
-        result.setTotalComplexity(totalCC);
-        result.setMaxComplexity(maxCC);
-        result.setAverageComplexity(Math.round(avgCC * 100.0) / 100.0);
+        if (!cfgs.isEmpty()) {
+            double avgCC = (double) totalCC / cfgs.size();
+            result.setTotalComplexity(totalCC);
+            result.setMaxComplexity(maxCC);
+            result.setAverageComplexity(Math.round(avgCC * 100.0) / 100.0);
+        }
+
+        SecurityResult secResult = securityScanner.scan(filepath, reader.getLines());
+        result.setSecurityResult(secResult);
+        result.setTotalRedFlags(secResult.getTotalFlags());
+        result.setVulnerabilityDensity(
+                VulnerabilityCalculator.calculateDensity(secResult.getTotalFlags(), loc)
+        );
 
         return result;
     }
@@ -62,7 +78,6 @@ public class ComplexityAnalyser {
         int p = cfg.getConnectedComponents();
 
         int m = cfg.getDecisionCount() + 1;
-
         m = Math.max(m, 1);
 
         String risk = classifyRisk(m);
@@ -71,6 +86,10 @@ public class ComplexityAnalyser {
                 cfg.getFunctionName(),
                 m, e, n, p, risk
         );
+    }
+
+    public SecurityScanner getSecurityScanner() {
+        return securityScanner;
     }
 
     public static String classifyRisk(int complexity) {

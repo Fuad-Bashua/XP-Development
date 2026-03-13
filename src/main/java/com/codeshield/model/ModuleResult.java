@@ -1,5 +1,7 @@
 package com.codeshield.model;
 
+import com.codeshield.security.SecurityResult;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +15,9 @@ public class ModuleResult {
     private int totalLoc;
     private String status;
     private String skipReason;
+    private SecurityResult securityResult;
+    private int totalRedFlags;
+    private double vulnerabilityDensity;
 
     public ModuleResult(String filename) {
         this.filename = filename;
@@ -82,5 +87,29 @@ public class ModuleResult {
 
     public boolean isSkipped() {
         return "skipped/unsupported".equals(status);
+    }
+
+    public void setSecurityResult(SecurityResult securityResult) {
+        this.securityResult = securityResult;
+    }
+
+    public SecurityResult getSecurityResult() {
+        return securityResult;
+    }
+
+    public void setTotalRedFlags(int totalRedFlags) {
+        this.totalRedFlags = totalRedFlags;
+    }
+
+    public int getTotalRedFlags() {
+        return totalRedFlags;
+    }
+
+    public void setVulnerabilityDensity(double vulnerabilityDensity) {
+        this.vulnerabilityDensity = vulnerabilityDensity;
+    }
+
+    public double getVulnerabilityDensity() {
+        return vulnerabilityDensity;
     }
 }

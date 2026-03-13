@@ -3,6 +3,9 @@ package com.codeshield;
 import com.codeshield.analysis.ComplexityAnalyser;
 import com.codeshield.model.FunctionComplexity;
 import com.codeshield.model.ModuleResult;
+import com.codeshield.security.DetectionRule;
+import com.codeshield.security.RedFlag;
+import com.codeshield.security.SecurityResult;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,14 +17,19 @@ import java.util.stream.Stream;
 
 public class Main {
 
-    private static final String VERSION = "1.0-ITERATION1";
-    private static final String SEPARATOR = "=".repeat(70);
-    private static final String THIN_SEP = "-".repeat(40);
+    private static final String VERSION = "1.0-ITERATION2";
+    private static final String SEP = "=".repeat(70);
+    private static final String THIN = "-".repeat(40);
 
     public static void main(String[] args) {
         if (args.length < 1) {
             printUsage();
             System.exit(1);
+        }
+
+        if (args[0].equals("rules")) {
+            printRules();
+            return;
         }
 
         String path = args[0];
@@ -34,7 +42,7 @@ public class Main {
 
         System.out.println();
         System.out.println("  CodeShield - Technical Debt & Security Scanner v" + VERSION);
-        System.out.println("  " + SEPARATOR);
+        System.out.println("  " + SEP);
         System.out.println("  Found " + files.size() + " Python file(s) to analyse.");
         System.out.println();
 
@@ -52,7 +60,8 @@ public class Main {
                 System.out.println("SKIPPED (" + result.getSkipReason() + ")");
             } else {
                 System.out.println("CC_max=" + result.getMaxComplexity()
-                        + " | Functions=" + result.getFunctions().size()
+                        + " | Flags=" + result.getTotalRedFlags()
+                        + " | VD=" + result.getVulnerabilityDensity()
                         + " | LOC=" + result.getTotalLoc());
             }
         }
@@ -62,16 +71,17 @@ public class Main {
 
     private static void printReport(List<ModuleResult> results, String projectPath) {
         System.out.println();
-        System.out.println(SEPARATOR);
-        System.out.println("  CODESHIELD COMPLEXITY REPORT");
+        System.out.println(SEP);
+        System.out.println("  CODESHIELD ANALYSIS REPORT");
         System.out.println("  Project: " + new File(projectPath).getName());
-        System.out.println(SEPARATOR);
+        System.out.println(SEP);
 
         int analysedCount = 0;
         int skippedCount = 0;
         int totalLoc = 0;
         int totalFunctions = 0;
         int overallMaxCC = 0;
+        int totalRedFlags = 0;
 
         for (ModuleResult r : results) {
             if (r.isSkipped()) {
@@ -81,23 +91,25 @@ public class Main {
                 totalLoc += r.getTotalLoc();
                 totalFunctions += r.getFunctions().size();
                 overallMaxCC = Math.max(overallMaxCC, r.getMaxComplexity());
+                totalRedFlags += r.getTotalRedFlags();
             }
         }
 
         System.out.println();
         System.out.println("  SUMMARY");
-        System.out.println("  " + THIN_SEP);
-        System.out.println("  Modules analysed:   " + analysedCount);
-        System.out.println("  Modules skipped:    " + skippedCount);
-        System.out.println("  Total LOC:          " + totalLoc);
-        System.out.println("  Total functions:    " + totalFunctions);
-        System.out.println("  Overall max CC:     " + overallMaxCC
+        System.out.println("  " + THIN);
+        System.out.println("  Modules analysed:    " + analysedCount);
+        System.out.println("  Modules skipped:     " + skippedCount);
+        System.out.println("  Total LOC:           " + totalLoc);
+        System.out.println("  Total functions:     " + totalFunctions);
+        System.out.println("  Overall max CC:      " + overallMaxCC
                 + " [" + ComplexityAnalyser.classifyRisk(overallMaxCC) + "]");
+        System.out.println("  Total red flags:     " + totalRedFlags);
 
         System.out.println();
-        System.out.println(SEPARATOR);
+        System.out.println(SEP);
         System.out.println("  MODULE DETAILS");
-        System.out.println(SEPARATOR);
+        System.out.println(SEP);
 
         int moduleNum = 1;
         for (ModuleResult r : results) {
@@ -106,39 +118,79 @@ public class Main {
             System.out.println("  [" + moduleNum + "] " + basename);
 
             if (r.isSkipped()) {
-                System.out.println("      Status:    skipped/unsupported");
-                System.out.println("      Reason:    " + r.getSkipReason());
+                System.out.println("      Status:               skipped/unsupported");
+                System.out.println("      Reason:               " + r.getSkipReason());
                 moduleNum++;
                 continue;
             }
 
-            System.out.println("      Status:    analysed");
-            System.out.println("      LOC:       " + r.getTotalLoc());
-            System.out.println("      Functions: " + r.getFunctions().size());
-            System.out.println("      Max CC:    " + r.getMaxComplexity());
-            System.out.println("      Avg CC:    " + r.getAverageComplexity());
-            System.out.println("      Total CC:  " + r.getTotalComplexity());
+            System.out.println("      Status:               analysed");
+            System.out.println("      LOC:                  " + r.getTotalLoc());
+            System.out.println("      Functions:            " + r.getFunctions().size());
+            System.out.println("      Max CC:               " + r.getMaxComplexity());
+            System.out.println("      Avg CC:               " + r.getAverageComplexity());
+            System.out.println("      Total CC:             " + r.getTotalComplexity());
+            System.out.println("      Red Flags:            " + r.getTotalRedFlags());
+            System.out.println("      Vulnerability Density: " + r.getVulnerabilityDensity());
 
-            System.out.println("      " + THIN_SEP);
-            System.out.printf("      %-30s %5s   %s%n", "Function", "CC", "Risk Level");
-            System.out.println("      " + THIN_SEP);
+            if (!r.getFunctions().isEmpty()) {
+                System.out.println("      " + THIN);
+                System.out.printf("      %-30s %5s   %s%n", "Function", "CC", "Risk Level");
+                System.out.println("      " + THIN);
 
-            for (FunctionComplexity fc : r.getFunctions()) {
-                System.out.printf("      %-30s %5d   %s%n",
-                        truncate(fc.getFunctionName(), 28),
-                        fc.getCyclomaticComplexity(),
-                        fc.getRiskLevel());
-                System.out.printf("        (E=%d, N=%d, P=%d)%n",
-                        fc.getEdges(), fc.getNodes(), fc.getConnectedComponents());
+                for (FunctionComplexity fc : r.getFunctions()) {
+                    System.out.printf("      %-30s %5d   %s%n",
+                            truncate(fc.getFunctionName(), 28),
+                            fc.getCyclomaticComplexity(),
+                            fc.getRiskLevel());
+                }
+            }
+
+            SecurityResult sec = r.getSecurityResult();
+            if (sec != null && sec.getTotalFlags() > 0) {
+                System.out.println("      " + THIN);
+                System.out.println("      Security Findings (" + sec.getTotalFlags()
+                        + " flags: " + sec.getCriticalCount() + " Critical, "
+                        + sec.getHighCount() + " High, "
+                        + sec.getMediumCount() + " Medium)");
+                System.out.println("      " + THIN);
+
+                for (RedFlag rf : sec.getRedFlags()) {
+                    System.out.printf("      [%-8s] %s - %s (line %d)%n",
+                            rf.getSeverity(), rf.getRuleId(), rf.getRuleName(),
+                            rf.getLineNumber());
+                    String content = rf.getLineContent();
+                    if (content.length() > 60) content = content.substring(0, 57) + "...";
+                    System.out.println("                 " + content);
+                    System.out.println("                 " + rf.getCweReference());
+                }
             }
 
             moduleNum++;
         }
 
         System.out.println();
-        System.out.println(SEPARATOR);
+        System.out.println(SEP);
         System.out.println("  End of Report");
-        System.out.println(SEPARATOR);
+        System.out.println(SEP);
+    }
+
+    private static void printRules() {
+        ComplexityAnalyser analyser = new ComplexityAnalyser();
+        List<DetectionRule> rules = analyser.getSecurityScanner().getRules();
+
+        System.out.println();
+        System.out.println("  CodeShield - Active Security Detection Rules");
+        System.out.println("  " + SEP);
+        System.out.println("  " + rules.size() + " rules active:");
+        System.out.println();
+
+        for (DetectionRule r : rules) {
+            System.out.printf("  %-8s [%-8s] %s%n", r.getRuleId(), r.getSeverity(), r.getName());
+            System.out.println("           " + r.getCweReference() + " - "
+                    + truncate(r.getDescription(), 55));
+            System.out.println();
+        }
     }
 
     private static List<String> findPythonFiles(String path) {
@@ -178,9 +230,8 @@ public class Main {
     }
 
     private static void printUsage() {
-        System.out.println("  Usage: java com.codeshield.Main <file-or-directory>");
-        System.out.println();
-        System.out.println("  Analyses Python source files for cyclomatic complexity.");
-        System.out.println("  Accepts a .py file or a directory (scanned recursively).");
+        System.out.println("  Usage:");
+        System.out.println("    java com.codeshield.Main <file-or-directory>");
+        System.out.println("    java com.codeshield.Main rules");
     }
 }
