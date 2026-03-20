@@ -18,6 +18,9 @@ public class ModuleResult {
     private SecurityResult securityResult;
     private int totalRedFlags;
     private double vulnerabilityDensity;
+    private double tdi;
+    private String riskClassification;
+    private boolean highRisk;
 
     public ModuleResult(String filename) {
         this.filename = filename;
@@ -112,4 +115,13 @@ public class ModuleResult {
     public double getVulnerabilityDensity() {
         return vulnerabilityDensity;
     }
+
+    public void setTdi(double tdi) { this.tdi = tdi; }
+    public double getTdi() { return tdi; }
+
+    public void setRiskClassification(String riskClassification) { this.riskClassification = riskClassification; }
+    public String getRiskClassification() { return riskClassification; }
+
+    public void setHighRisk(boolean highRisk) { this.highRisk = highRisk; }
+    public boolean isHighRisk() { return highRisk; }
 }

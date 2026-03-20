@@ -69,6 +69,12 @@ public class ComplexityAnalyser {
                 VulnerabilityCalculator.calculateDensity(secResult.getTotalFlags(), loc)
         );
 
+        double complexityScore = (double) maxCC;
+        double tdi = TDICalculator.calculate(complexityScore, result.getVulnerabilityDensity());
+        result.setTdi(tdi);
+        result.setRiskClassification(TDICalculator.classifyRisk(tdi));
+        result.setHighRisk(TDICalculator.isHighRisk(tdi));
+
         return result;
     }
 
