@@ -28,100 +28,33 @@ public class ModuleResult {
         this.status = "analysed";
     }
 
-    public void addFunction(FunctionComplexity fc) {
-        functions.add(fc);
-    }
+    public void addFunction(FunctionComplexity fc) { functions.add(fc); }
+    public void setAverageComplexity(double v) { this.averageComplexity = v; }
+    public void setMaxComplexity(int v) { this.maxComplexity = v; }
+    public void setTotalComplexity(int v) { this.totalComplexity = v; }
+    public void setTotalLoc(int v) { this.totalLoc = v; }
+    public void setStatus(String v) { this.status = v; }
+    public void setSkipReason(String v) { this.skipReason = v; }
+    public void setSecurityResult(SecurityResult v) { this.securityResult = v; }
+    public void setTotalRedFlags(int v) { this.totalRedFlags = v; }
+    public void setVulnerabilityDensity(double v) { this.vulnerabilityDensity = v; }
+    public void setTdi(double v) { this.tdi = v; }
+    public void setRiskClassification(String v) { this.riskClassification = v; }
+    public void setHighRisk(boolean v) { this.highRisk = v; }
 
-    public void setAverageComplexity(double averageComplexity) {
-        this.averageComplexity = averageComplexity;
-    }
-
-    public void setMaxComplexity(int maxComplexity) {
-        this.maxComplexity = maxComplexity;
-    }
-
-    public void setTotalComplexity(int totalComplexity) {
-        this.totalComplexity = totalComplexity;
-    }
-
-    public void setTotalLoc(int totalLoc) {
-        this.totalLoc = totalLoc;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public void setSkipReason(String skipReason) {
-        this.skipReason = skipReason;
-    }
-
-    public String getFilename() {
-        return filename;
-    }
-
-    public List<FunctionComplexity> getFunctions() {
-        return functions;
-    }
-
-    public double getAverageComplexity() {
-        return averageComplexity;
-    }
-
-    public int getMaxComplexity() {
-        return maxComplexity;
-    }
-
-    public int getTotalComplexity() {
-        return totalComplexity;
-    }
-
-    public int getTotalLoc() {
-        return totalLoc;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public String getSkipReason() {
-        return skipReason;
-    }
-
-    public boolean isSkipped() {
-        return "skipped/unsupported".equals(status);
-    }
-
-    public void setSecurityResult(SecurityResult securityResult) {
-        this.securityResult = securityResult;
-    }
-
-    public SecurityResult getSecurityResult() {
-        return securityResult;
-    }
-
-    public void setTotalRedFlags(int totalRedFlags) {
-        this.totalRedFlags = totalRedFlags;
-    }
-
-    public int getTotalRedFlags() {
-        return totalRedFlags;
-    }
-
-    public void setVulnerabilityDensity(double vulnerabilityDensity) {
-        this.vulnerabilityDensity = vulnerabilityDensity;
-    }
-
-    public double getVulnerabilityDensity() {
-        return vulnerabilityDensity;
-    }
-
-    public void setTdi(double tdi) { this.tdi = tdi; }
+    public String getFilename() { return filename; }
+    public List<FunctionComplexity> getFunctions() { return functions; }
+    public double getAverageComplexity() { return averageComplexity; }
+    public int getMaxComplexity() { return maxComplexity; }
+    public int getTotalComplexity() { return totalComplexity; }
+    public int getTotalLoc() { return totalLoc; }
+    public String getStatus() { return status; }
+    public String getSkipReason() { return skipReason; }
+    public SecurityResult getSecurityResult() { return securityResult; }
+    public int getTotalRedFlags() { return totalRedFlags; }
+    public double getVulnerabilityDensity() { return vulnerabilityDensity; }
     public double getTdi() { return tdi; }
-
-    public void setRiskClassification(String riskClassification) { this.riskClassification = riskClassification; }
     public String getRiskClassification() { return riskClassification; }
-
-    public void setHighRisk(boolean highRisk) { this.highRisk = highRisk; }
     public boolean isHighRisk() { return highRisk; }
+    public boolean isSkipped() { return "skipped/unsupported".equals(status); }
 }

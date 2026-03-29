@@ -13,11 +13,8 @@ public class DetectionRule {
 
     public DetectionRule(String ruleId, String name, String severity,
                          String description, String regex, String cweReference) {
-        this.ruleId = ruleId;
-        this.name = name;
-        this.severity = severity;
-        this.description = description;
-        this.pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        this.ruleId = ruleId; this.name = name; this.severity = severity;
+        this.description = description; this.pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
         this.cweReference = cweReference;
     }
 

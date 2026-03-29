@@ -12,13 +12,8 @@ public class CFGEdge {
         this.target = target;
     }
 
-    public int getSource() {
-        return source;
-    }
-
-    public int getTarget() {
-        return target;
-    }
+    public int getSource() { return source; }
+    public int getTarget() { return target; }
 
     @Override
     public boolean equals(Object o) {
@@ -29,12 +24,5 @@ public class CFGEdge {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(source, target);
-    }
-
-    @Override
-    public String toString() {
-        return "Edge{" + source + " -> " + target + "}";
-    }
+    public int hashCode() { return Objects.hash(source, target); }
 }
