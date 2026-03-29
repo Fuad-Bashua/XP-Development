@@ -19,55 +19,15 @@ public class ControlFlowGraph {
         this.decisionCount = 0;
     }
 
-    public void addNode(CFGNode node) {
-        nodes.add(node);
-    }
-
-    public void addEdge(CFGEdge edge) {
-        if (!edges.contains(edge)) {
-            edges.add(edge);
-        }
-    }
-
-    public String getFunctionName() {
-        return functionName;
-    }
-
-    public List<CFGNode> getNodes() {
-        return nodes;
-    }
-
-    public List<CFGEdge> getEdges() {
-        return edges;
-    }
-
-    public int getNumNodes() {
-        return nodes.size();
-    }
-
-    public int getNumEdges() {
-        return edges.size();
-    }
-
-    public int getConnectedComponents() {
-        return connectedComponents;
-    }
-
-    public void setConnectedComponents(int p) {
-        this.connectedComponents = p;
-    }
-
-    public int getDecisionCount() {
-        return decisionCount;
-    }
-
-    public void setDecisionCount(int decisionCount) {
-        this.decisionCount = decisionCount;
-    }
-
-    @Override
-    public String toString() {
-        return "CFG{function='" + functionName + "', nodes=" + nodes.size()
-                + ", edges=" + edges.size() + ", decisions=" + decisionCount + "}";
-    }
+    public void addNode(CFGNode node) { nodes.add(node); }
+    public void addEdge(CFGEdge edge) { if (!edges.contains(edge)) edges.add(edge); }
+    public String getFunctionName() { return functionName; }
+    public List<CFGNode> getNodes() { return nodes; }
+    public List<CFGEdge> getEdges() { return edges; }
+    public int getNumNodes() { return nodes.size(); }
+    public int getNumEdges() { return edges.size(); }
+    public int getConnectedComponents() { return connectedComponents; }
+    public void setConnectedComponents(int p) { this.connectedComponents = p; }
+    public int getDecisionCount() { return decisionCount; }
+    public void setDecisionCount(int d) { this.decisionCount = d; }
 }

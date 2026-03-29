@@ -9,18 +9,11 @@ public class TDICalculator {
     }
 
     public static String classifyRisk(double tdi) {
-        if (tdi >= HIGH_RISK_THRESHOLD) {
-            return "Extremely Complex / High Risk - Immediate Refactoring Recommended";
-        } else if (tdi >= 30) {
-            return "Moderate Risk - Refactoring Advised";
-        } else if (tdi >= 10) {
-            return "Low Risk - Monitor";
-        } else {
-            return "Minimal Risk - Acceptable";
-        }
+        if (tdi >= HIGH_RISK_THRESHOLD) return "Extremely Complex / High Risk - Immediate Refactoring Recommended";
+        else if (tdi >= 30) return "Moderate Risk - Refactoring Advised";
+        else if (tdi >= 10) return "Low Risk - Monitor";
+        else return "Minimal Risk - Acceptable";
     }
 
-    public static boolean isHighRisk(double tdi) {
-        return tdi >= HIGH_RISK_THRESHOLD;
-    }
+    public static boolean isHighRisk(double tdi) { return tdi >= HIGH_RISK_THRESHOLD; }
 }

@@ -14,9 +14,7 @@ public class ComplexityAnalyser {
 
     private final SecurityScanner securityScanner;
 
-    public ComplexityAnalyser() {
-        this.securityScanner = new SecurityScanner();
-    }
+    public ComplexityAnalyser() { this.securityScanner = new SecurityScanner(); }
 
     public ModuleResult analyse(String filepath) {
         ModuleResult result = new ModuleResult(filepath);
@@ -33,21 +31,16 @@ public class ComplexityAnalyser {
 
         CFGBuilder builder = new CFGBuilder();
         List<ControlFlowGraph> cfgs;
-        try {
-            cfgs = builder.buildAll(reader.getLines());
-        } catch (Exception e) {
+        try { cfgs = builder.buildAll(reader.getLines()); }
+        catch (Exception e) {
             result.setStatus("skipped/unsupported");
             result.setSkipReason("Parse error: " + e.getMessage());
             return result;
         }
 
-        if (cfgs.isEmpty()) {
-            result.setSkipReason("No functions found in module");
-        }
+        if (cfgs.isEmpty()) result.setSkipReason("No functions found in module");
 
-        int totalCC = 0;
-        int maxCC = 0;
-
+        int totalCC = 0, maxCC = 0;
         for (ControlFlowGraph cfg : cfgs) {
             FunctionComplexity fc = calculateComplexity(cfg);
             result.addFunction(fc);
@@ -65,9 +58,7 @@ public class ComplexityAnalyser {
         SecurityResult secResult = securityScanner.scan(filepath, reader.getLines());
         result.setSecurityResult(secResult);
         result.setTotalRedFlags(secResult.getTotalFlags());
-        result.setVulnerabilityDensity(
-                VulnerabilityCalculator.calculateDensity(secResult.getTotalFlags(), loc)
-        );
+        result.setVulnerabilityDensity(VulnerabilityCalculator.calculateDensity(secResult.getTotalFlags(), loc));
 
         double complexityScore = (double) maxCC;
         double tdi = TDICalculator.calculate(complexityScore, result.getVulnerabilityDensity());
@@ -79,34 +70,17 @@ public class ComplexityAnalyser {
     }
 
     public FunctionComplexity calculateComplexity(ControlFlowGraph cfg) {
-        int e = cfg.getNumEdges();
-        int n = cfg.getNumNodes();
-        int p = cfg.getConnectedComponents();
-
-        int m = cfg.getDecisionCount() + 1;
-        m = Math.max(m, 1);
-
-        String risk = classifyRisk(m);
-
-        return new FunctionComplexity(
-                cfg.getFunctionName(),
-                m, e, n, p, risk
-        );
+        int e = cfg.getNumEdges(), n = cfg.getNumNodes(), p = cfg.getConnectedComponents();
+        int m = Math.max(cfg.getDecisionCount() + 1, 1);
+        return new FunctionComplexity(cfg.getFunctionName(), m, e, n, p, classifyRisk(m));
     }
 
-    public SecurityScanner getSecurityScanner() {
-        return securityScanner;
-    }
+    public SecurityScanner getSecurityScanner() { return securityScanner; }
 
     public static String classifyRisk(int complexity) {
-        if (complexity <= 10) {
-            return "Low Risk";
-        } else if (complexity <= 20) {
-            return "Moderate Risk";
-        } else if (complexity <= 50) {
-            return "High Risk";
-        } else {
-            return "Very High Risk";
-        }
+        if (complexity <= 10) return "Low Risk";
+        else if (complexity <= 20) return "Moderate Risk";
+        else if (complexity <= 50) return "High Risk";
+        else return "Very High Risk";
     }
 }

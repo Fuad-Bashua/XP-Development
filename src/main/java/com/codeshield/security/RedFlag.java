@@ -10,16 +10,11 @@ public class RedFlag {
     private final String lineContent;
     private final String cweReference;
 
-    public RedFlag(String ruleId, String ruleName, String severity,
-                   String description, int lineNumber, String lineContent,
-                   String cweReference) {
-        this.ruleId = ruleId;
-        this.ruleName = ruleName;
-        this.severity = severity;
-        this.description = description;
-        this.lineNumber = lineNumber;
-        this.lineContent = lineContent;
-        this.cweReference = cweReference;
+    public RedFlag(String ruleId, String ruleName, String severity, String description,
+                   int lineNumber, String lineContent, String cweReference) {
+        this.ruleId = ruleId; this.ruleName = ruleName; this.severity = severity;
+        this.description = description; this.lineNumber = lineNumber;
+        this.lineContent = lineContent; this.cweReference = cweReference;
     }
 
     public String getRuleId() { return ruleId; }

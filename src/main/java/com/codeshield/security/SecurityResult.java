@@ -13,18 +13,13 @@ public class SecurityResult {
         this.redFlags = new ArrayList<>();
     }
 
-    public void addRedFlag(RedFlag flag) {
-        redFlags.add(flag);
-    }
-
+    public void addRedFlag(RedFlag flag) { redFlags.add(flag); }
     public String getFilename() { return filename; }
     public List<RedFlag> getRedFlags() { return redFlags; }
     public int getTotalFlags() { return redFlags.size(); }
 
     public int countBySeverity(String severity) {
-        return (int) redFlags.stream()
-                .filter(f -> f.getSeverity().equals(severity))
-                .count();
+        return (int) redFlags.stream().filter(f -> f.getSeverity().equals(severity)).count();
     }
 
     public int getCriticalCount() { return countBySeverity("Critical"); }

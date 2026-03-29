@@ -10,8 +10,7 @@ public class FunctionComplexity {
     private final String riskLevel;
 
     public FunctionComplexity(String functionName, int cyclomaticComplexity,
-                              int edges, int nodes, int connectedComponents,
-                              String riskLevel) {
+                              int edges, int nodes, int connectedComponents, String riskLevel) {
         this.functionName = functionName;
         this.cyclomaticComplexity = cyclomaticComplexity;
         this.edges = edges;
@@ -20,34 +19,10 @@ public class FunctionComplexity {
         this.riskLevel = riskLevel;
     }
 
-    public String getFunctionName() {
-        return functionName;
-    }
-
-    public int getCyclomaticComplexity() {
-        return cyclomaticComplexity;
-    }
-
-    public int getEdges() {
-        return edges;
-    }
-
-    public int getNodes() {
-        return nodes;
-    }
-
-    public int getConnectedComponents() {
-        return connectedComponents;
-    }
-
-    public String getRiskLevel() {
-        return riskLevel;
-    }
-
-    @Override
-    public String toString() {
-        return functionName + ": CC=" + cyclomaticComplexity
-                + " (E=" + edges + ", N=" + nodes + ", P=" + connectedComponents + ")"
-                + " [" + riskLevel + "]";
-    }
+    public String getFunctionName() { return functionName; }
+    public int getCyclomaticComplexity() { return cyclomaticComplexity; }
+    public int getEdges() { return edges; }
+    public int getNodes() { return nodes; }
+    public int getConnectedComponents() { return connectedComponents; }
+    public String getRiskLevel() { return riskLevel; }
 }

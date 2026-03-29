@@ -12,17 +12,9 @@ public class CFGNode {
         this.lineNumber = lineNumber;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public int getLineNumber() {
-        return lineNumber;
-    }
+    public int getId() { return id; }
+    public String getLabel() { return label; }
+    public int getLineNumber() { return lineNumber; }
 
     @Override
     public String toString() {
