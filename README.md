@@ -300,7 +300,11 @@ TDI drops from 80.26 to 2.50 (a reduction of 77.76), complexity drops from 9 to 
 
 ## 10. Running the Tests
 
-CodeShield includes 104 unit tests that verify every component. To run them:
+CodeShield has two test suites: a built-in test runner (no dependencies needed) and a JUnit 5 suite (requires Maven).
+
+### Option A: Built-in TestRunner (104 tests, no Maven required)
+
+This runs the original test suite using the custom TestRunner class. No additional tools needed — just Java.
 
 ```
 java -cp target/classes com.codeshield.TestRunner
@@ -327,7 +331,31 @@ At the end you should see:
   RESULTS: 104 passed, 0 failed, 104 total
 ```
 
-If any tests fail, check that you compiled all files correctly (see Step 3).
+### Option B: JUnit 5 Test Suite (81 tests, requires Maven)
+
+This runs the full JUnit 5 test suite which includes additional tests for TDI calculation, vulnerability density, security scanner (all 16 rules), report generation, integration/E2E pipeline, and error handling.
+
+You need Maven installed. Check with:
+```
+mvn --version
+```
+
+Then run:
+```
+mvn clean test
+```
+
+Expected output:
+```
+[INFO] Tests run: 81, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+```
+
+The JUnit 5 tests are located in:
+- `src/test/java/com/codeshield/CodeShieldTest.java` — 21 tests (LOC, CFG, complexity, risk, edge cases)
+- `src/test/java/com/codeshield/CodeShieldTestSuite.java` — 60 tests (TDI, vulnerability density, security scanner, report generator, integration, error handling)
+
+If any tests fail, check that your `pom.xml` includes the JUnit 5 dependency and the Maven Surefire plugin (see pom.xml for details).
 
 ---
 
@@ -440,6 +468,9 @@ codeshield/
     │   └── ReportComparator.java            # Compares two reports
     ├── Main.java                            # CLI entry point
     └── TestRunner.java                      # 104 unit tests
+    └── src/test/java/com/codeshield/
+        ├── CodeShieldTest.java              # 21 JUnit 5 tests (LOC, CFG, complexity)
+        └── CodeShieldTestSuite.java         # 60 JUnit 5 tests (TDI, security, reports, E2E)
 ```
 
 ---
@@ -455,4 +486,5 @@ codeshield/
 | Scan sorted by vuln density | `java -cp target/classes com.codeshield.Main path/ --sort vulnerability_density` |
 | Compare two reports | `java -cp target/classes com.codeshield.Main compare before.json after.json` |
 | List security rules | `java -cp target/classes com.codeshield.Main rules` |
-| Run tests | `java -cp target/classes com.codeshield.TestRunner` |
+| Run tests (built-in) | `java -cp target/classes com.codeshield.TestRunner` |
+| Run tests (JUnit 5) | `mvn clean test` |
