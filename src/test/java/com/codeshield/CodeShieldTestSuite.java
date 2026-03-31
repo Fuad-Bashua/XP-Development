@@ -7,8 +7,6 @@ import com.codeshield.model.*;
 import com.codeshield.parser.CFGBuilder;
 import com.codeshield.parser.SourceReader;
 import com.codeshield.report.ReportGenerator;
-import com.codeshield.security.DetectionRule;
-import com.codeshield.security.RedFlag;
 import com.codeshield.security.SecurityResult;
 import com.codeshield.security.SecurityScanner;
 
