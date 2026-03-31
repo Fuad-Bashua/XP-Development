@@ -4,7 +4,6 @@ import com.codeshield.analysis.ComplexityAnalyser;
 import com.codeshield.analysis.TDICalculator;
 import com.codeshield.analysis.VulnerabilityCalculator;
 import com.codeshield.compare.ReportComparator;
-import com.codeshield.compare.ModuleComparison;
 import com.codeshield.model.*;
 import com.codeshield.parser.CFGBuilder;
 import com.codeshield.parser.SourceReader;
