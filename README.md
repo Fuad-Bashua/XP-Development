@@ -20,6 +20,7 @@ CodeShield is a static analysis tool built in Java that scans Python source code
 12. Troubleshooting
 13. How the Metrics Work
 14. Project Structure
+15. Web Frontend (Dashboard UI)
 
 ---
 
@@ -61,6 +62,7 @@ codeshield/
 │   └── payment_service.py
 ├── sample_code_refactored/
 │   └── payment_service.py
+├── frontend/                                   # React dashboard UI (see section 15)
 └── src/
     └── main/
         └── java/
@@ -471,7 +473,139 @@ codeshield/
     └── src/test/java/com/codeshield/
         ├── CodeShieldTest.java              # 21 JUnit 5 tests (LOC, CFG, complexity)
         └── CodeShieldTestSuite.java         # 60 JUnit 5 tests (TDI, security, reports, E2E)
+
+frontend/                                    # React 18 + Vite dashboard UI
+├── package.json
+├── vite.config.js
+├── tailwind.config.js
+├── postcss.config.js
+├── index.html
+└── src/
+    ├── main.jsx                             # React entry point
+    ├── App.jsx                              # Routes (Dashboard, Scans, Rules, Compare, About)
+    ├── index.css                            # Tailwind directives + global styles
+    ├── data/
+    │   └── mockData.js                      # Mock data mirroring Java JSON output
+    ├── components/                          # 9 reusable components
+    │   ├── Layout.jsx, Sidebar.jsx, PageHeader.jsx
+    │   ├── StatCard.jsx, ModuleCard.jsx, RuleRow.jsx
+    │   └── StatusBadge.jsx, SectionCard.jsx, EmptyState.jsx
+    └── pages/                               # 5 routed pages
+        ├── Dashboard.jsx                    # Stats, high-risk alert, TDI bar chart
+        ├── Scans.jsx                        # Sortable/filterable module table
+        ├── SecurityRules.jsx                # All 16 SEC rules with CWE references
+        ├── Compare.jsx                      # Before/after refactoring delta view
+        └── About.jsx                        # Project info and metric formulas
 ```
+
+---
+
+## 15. Web Frontend (Dashboard UI)
+
+CodeShield ships with a React-based web frontend that visualises analysis results as a professional security dashboard. It lives in the `frontend/` directory and is fully independent of the Java CLI — they can be built and run separately.
+
+### What's included
+
+The frontend has five pages, all reachable from the persistent sidebar:
+
+- **Dashboard** — summary stat cards (total LOC, modules scanned, total red flags, average TDI), a high-risk alert banner, a recent activity feed, and a horizontal TDI bar chart for every module.
+- **Scans** — searchable, sortable, filterable table of every analysed module showing LOC, function count, max complexity, vulnerability density, TDI score, risk classification, and red flag count.
+- **Security Rules** — reference of all 16 SEC-001 to SEC-016 detection rules with severity, CWE mapping, category, and description. Includes severity filter chips and a category-grouped breakdown.
+- **Compare** — before/after refactoring view with metric toggle (TDI / Complexity / Vuln Density), per-module delta table, and visual bar pairs showing the improvement.
+- **About** — explains what CodeShield does, the technology stack, and the formulas behind the CC, VD, and TDI metrics.
+
+### Technology stack
+
+| Layer | Choice |
+|---|---|
+| Framework | React 18 |
+| Build tool | Vite 5 |
+| Styling | Tailwind CSS v3 (dark navy theme with cyan accents) |
+| Routing | React Router v6 |
+| Icons | Lucide React |
+
+No additional UI libraries were used — all visualisations (TDI bars, delta comparisons) are built from native HTML and Tailwind utility classes to keep the bundle small and the code easy to explain.
+
+### What you need before starting
+
+You need Node.js 18 or higher. Check with:
+
+```
+node --version
+npm --version
+```
+
+If Node.js is not installed, get it from https://nodejs.org or via your package manager (`brew install node` on macOS).
+
+### Running the frontend locally
+
+Step 1: Move into the `frontend/` directory:
+
+```
+cd frontend
+```
+
+Step 2: Install dependencies (only needed once, or after pulling new dependency changes):
+
+```
+npm install
+```
+
+This downloads ~133 packages into `frontend/node_modules/` (about 100MB). The `node_modules/` folder is gitignored.
+
+Step 3: Start the development server:
+
+```
+npm run dev
+```
+
+You should see:
+
+```
+  VITE v5.4.21  ready in 125 ms
+  ➜  Local:   http://localhost:3000/
+```
+
+Open http://localhost:3000 in any modern browser. The app supports hot module replacement — edits to source files appear in the browser within milliseconds.
+
+### Building for production
+
+To produce an optimised static build that can be deployed to any static host (GitHub Pages, Netlify, Vercel, etc.):
+
+```
+cd frontend
+npm run build
+```
+
+This writes a fully self-contained build to `frontend/dist/` (HTML, JS, CSS). The production bundle is around 220 KB JavaScript (gzipped to ~67 KB) plus 17 KB of CSS.
+
+To preview the production build locally before deploying:
+
+```
+npm run preview
+```
+
+This serves `dist/` at http://localhost:4173.
+
+### Mock data
+
+The frontend currently runs against mock data located in `frontend/src/data/mockData.js`. The mock structure intentionally mirrors the JSON schema produced by the Java CLI's `--json` flag, so swapping it for real data later requires only a `fetch` call rather than any restructuring.
+
+The mock data simulates a scan of seven Python modules from a payment processing microservice, plus a before/after comparison representing a security hardening sprint.
+
+### Frontend troubleshooting
+
+**`npm: command not found`**
+Node.js is not installed or not on your PATH. Install it from https://nodejs.org.
+
+**`Error: Cannot find module ...`**
+Dependencies are missing. Run `npm install` inside `frontend/`.
+
+**Port 3000 already in use**
+Another process is using the port. Either stop the other process, or edit `frontend/vite.config.js` and change the `server.port` value.
+
+**Tailwind classes not applying after editing**
+The Vite dev server should pick up changes automatically. If not, stop the server (Ctrl+C) and run `npm run dev` again.
 
 ---
 
@@ -488,3 +622,6 @@ codeshield/
 | List security rules | `java -cp target/classes com.codeshield.Main rules` |
 | Run tests (built-in) | `java -cp target/classes com.codeshield.TestRunner` |
 | Run tests (JUnit 5) | `mvn clean test` |
+| Install frontend deps | `cd frontend && npm install` |
+| Run frontend dev server | `cd frontend && npm run dev` |
+| Build frontend for production | `cd frontend && npm run build` |
