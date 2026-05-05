@@ -1,8 +1,9 @@
 import { NavLink } from 'react-router-dom'
-import { Shield, LayoutDashboard, Search, ShieldAlert, GitCompare, Info } from 'lucide-react'
+import { Shield, LayoutDashboard, Search, ShieldAlert, GitCompare, Info, Upload } from 'lucide-react'
 
 const NAV_ITEMS = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard'      },
+  { to: '/upload',    icon: Upload,          label: 'Upload'         },
   { to: '/scans',     icon: Search,          label: 'Scans'          },
   { to: '/rules',     icon: ShieldAlert,     label: 'Security Rules' },
   { to: '/compare',   icon: GitCompare,      label: 'Compare'        },
